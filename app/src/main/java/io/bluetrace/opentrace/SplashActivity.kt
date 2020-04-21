@@ -53,10 +53,14 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun goToNextScreen() {
-        if (!Preference.isOnBoarded(this)) {
+        startActivity(Intent(this, MainActivity::class.java))
+        /*
+         if (!Preference.isOnBoarded(this)) {
             startActivity(Intent(this, PreOnboardingActivity::class.java))
         } else {
             startActivity(Intent(this, MainActivity::class.java))
         }
+         */
+
     }
 }

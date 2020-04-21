@@ -28,6 +28,7 @@ import io.bluetrace.opentrace.BuildConfig
 import io.bluetrace.opentrace.Preference
 import io.bluetrace.opentrace.Utils
 import io.bluetrace.opentrace.bluetooth.BLEAdvertiser
+import io.bluetrace.opentrace.bluetooth.BLEDiscoverer
 import io.bluetrace.opentrace.bluetooth.gatt.ACTION_RECEIVED_STATUS
 import io.bluetrace.opentrace.bluetooth.gatt.ACTION_RECEIVED_STREETPASS
 import io.bluetrace.opentrace.bluetooth.gatt.STATUS
@@ -321,7 +322,6 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
     }
 
     private fun actionHealthCheck() {
-        performUserLoginCheck()
         performHealthCheck()
         Utils.scheduleRepeatingPurge(this.applicationContext, purgeInterval)
     }
@@ -332,17 +332,7 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
 
     private fun actionStart() {
         CentralLog.d(TAG, "Action Start")
-
-        TempIDManager.getTemporaryIDs(this, functions)
-            .addOnCompleteListener {
-                CentralLog.d(TAG, "Get TemporaryIDs completed")
-                //this will run whether it starts or fails.
-                var fetch = TempIDManager.retrieveTemporaryID(this.applicationContext)
-                fetch?.let {
-                    broadcastMessage = it
-                    setupCycles()
-                }
-            }
+        setupCycles()
     }
 
     fun actionUpdateBm() {
@@ -374,7 +364,9 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
     }
 
     private fun actionScan() {
-        if (TempIDManager.needToUpdate(this.applicationContext) || broadcastMessage == null) {
+        performScan()
+        /*
+          if (TempIDManager.needToUpdate(this.applicationContext) || broadcastMessage == null) {
             CentralLog.i(TAG, "[TempID] Need to update TemporaryID in actionScan")
             //need to pull new BM
             TempIDManager.getTemporaryIDs(this.applicationContext, functions)
@@ -383,13 +375,14 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
                     var fetch = TempIDManager.retrieveTemporaryID(this.applicationContext)
                     fetch?.let {
                         broadcastMessage = it
-                        performScan()
+
                     }
                 }
         } else {
             CentralLog.i(TAG, "[TempID] Don't need to update Temp ID in actionScan")
             performScan()
         }
+         */
     }
 
     private fun actionAdvertise() {
@@ -471,21 +464,7 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
         }
     }
 
-    private fun performUserLoginCheck() {
-        firebaseAnalytics = FirebaseAnalytics.getInstance(applicationContext)
-        auth = FirebaseAuth.getInstance()
-        val currentUser: FirebaseUser? = auth.currentUser
-        if (currentUser == null && Preference.isOnBoarded(this)) {
-            CentralLog.d(TAG, "User is not login but has completed onboarding")
-            val bundle = Bundle()
-            bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "Android")
-            bundle.putString(
-                FirebaseAnalytics.Param.ITEM_NAME,
-                "Have not login yet but in main activity"
-            )
-            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN, bundle)
-        }
-    }
+
 
     private fun performHealthCheck() {
 

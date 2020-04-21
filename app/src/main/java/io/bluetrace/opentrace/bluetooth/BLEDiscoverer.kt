@@ -15,7 +15,6 @@ import io.bluetrace.opentrace.logging.CentralLog
 import java.util.*
 import kotlin.properties.Delegates
 
-
 class BLEDiscoverer constructor(context: Context, serviceUUIDString: String) {
 
     private var serviceUUID: ParcelUuid by Delegates.notNull()
@@ -72,11 +71,6 @@ class BLEDiscoverer constructor(context: Context, serviceUUIDString: String) {
                     if (device.uuids == null) {
                         CentralLog.w(TAG, "Nope. No uuids cached for address: " + device.address)
                     }
-
-//                    if(device.uuids.contains(serviceUUID)){
-//                        Utils.broadcastDeviceAvailable(context, device)
-//                    }
-
                 }
                 BluetoothAdapter.ACTION_DISCOVERY_FINISHED -> {
                     CentralLog.i(TAG, "Discovery ended")

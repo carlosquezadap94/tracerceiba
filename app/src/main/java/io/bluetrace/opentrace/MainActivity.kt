@@ -65,25 +65,9 @@ class MainActivity : AppCompatActivity() {
         nav_view.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
         goToHome()
 
-        getFCMToken()
     }
 
-    private fun getFCMToken() {
-        FirebaseInstanceId.getInstance().instanceId
-            .addOnCompleteListener { task ->
-                if (!task.isSuccessful()) {
-                    CentralLog.w(TAG, "failed to get fcm token ${task.exception}")
-                    return@addOnCompleteListener
-                } else {
-                    // Get new Instance ID token
-                    val token = task.result?.token
-                    // Log and toast
-                    CentralLog.d(TAG, "FCM token: $token")
-                }
-            }
 
-
-    }
 
     private fun isMyServiceRunning(serviceClass: Class<*>): Boolean {
         val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
